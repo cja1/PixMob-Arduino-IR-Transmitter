@@ -16,9 +16,8 @@ The code is primarily based on [James Wang](https://github.com/jamesw343)'s work
 ## Limitations
 Not all of the commands in James Wang's [code](https://github.com/jamesw343/PixMob_IR) have been migrated across to Arduino. Key commands to make the PixMob bracelet show different lighting effects are included. Details:
 
-|----|--|
 |Included|					Excluded|
-| :---: |					:---: | 
+| ----	|					----	|
 |CommandSingleColorExt|		CommandSetGroupSel			|
 |CommandSetColor|			CommandSetGroupId			|
 |CommandSetConfig|			CommandSetGlobalSustainTime |
@@ -26,12 +25,11 @@ Not all of the commands in James Wang's [code](https://github.com/jamesw343/PixM
 |CommandTwoColors| 			CommandDoReset 				|
 |CommandSetRepeatDelayTime|								|
 |CommandSetRepeatCount|									|
-|----|--|
 
 
 ## Acknowledgements
 
-* [@jamesw343](https://github.com/jamesw343), [jamesw343/PixMob_IR](https://github.com/jamesw343/PixMob_IR) for his Python implementation of the messaging protocol to send many different commands to a PixMob IR bracelet.
+* [@jamesw343](https://github.com/jamesw343), [jamesw343/PixMob_IR](https://github.com/jamesw343/PixMob_IR) for his Python implementation of the messaging protocol to send many different commands to a PixMob IR wristband.
 * [@danielweidman](https://github.com/danielweidman), [danielweidman/pixmob-ir-reverse-engineering](https://github.com/danielweidman/pixmob-ir-reverse-engineering/), and contributors for effect definitions and Arduino IR sender program
 
 For more PixMob-related projects, take a look at the PixMob discord server: [https://discord.gg/UYqTjC7xp3](https://discord.gg/UYqTjC7xp3)
