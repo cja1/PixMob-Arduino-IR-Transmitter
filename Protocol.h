@@ -1,6 +1,6 @@
 /* PixMob Protocol,
 
-   Version 1.0, Septemebr 2024
+   Version 1.0, September 2024
    Charles Allen
 
    Based on James Wang's PixMob_IR python code here:
@@ -51,18 +51,18 @@ public:
   };
 
   static const uint8_t kMaxEncodedSize = 73;  // Static max encoded size: 9 x 8 + 1 for Arduino (max size required)
-  static const uint8_t kEndFlag = 0;          // End flag for RLE uint_8 array
 
   Command(uint8_t numBytes, uint8_t flagsType, uint8_t actionId = 0);
 
   void populateBuffer(Field fields[], uint8_t fieldValues[], uint8_t fieldsLen);
   void encode();  
-  void convertToRLE(uint8_t* runLengths);
+  void convertToRLE(uint8_t* RLEArray, uint8_t* RLEArrayLen);
 
-  static void printUIntArray(String label, uint8_t array[], uint8_t size);
+  static void printUInt8Array(String label, uint8_t array[], uint8_t size);
+  static void printUInt16Array(String label, uint16_t array[], uint8_t size);
 
 private:
-  static const uint8_t kMaxBufferSize = 9;  // Static max buffer size 9 for Arduino (max size required)
+  static const uint8_t kMaxBufferSize = 9;  // Static max buffer size 9 (max size required)
 
   uint8_t buffer[kMaxBufferSize];
   uint8_t numBytes;
@@ -81,7 +81,7 @@ public:
   CommandSingleColorExt(bool onStart = false, bool gstEnable = false, uint8_t red = 0, uint8_t green = 0, uint8_t blue = 0, uint8_t chance = CHANCE_100_PCT,
                         uint8_t attack = TIME_32_MS, uint8_t sustain = TIME_960_MS, uint8_t release = TIME_480_MS, uint8_t groupId = 0, bool enableRepeat = false);
 
-  void createRLE(uint8_t* runLengths);
+  void createRLE(uint8_t* RLEArray, uint8_t* RLEArrayLen);
 
 private:
   Field fOnStart = Field(2, 0, 1);
@@ -105,8 +105,8 @@ public:
   CommandSetColor(bool gstEnable = false, uint8_t red = 0, uint8_t green = 0, uint8_t blue = 0, uint8_t profileId = 0,
                   bool isBackground = false, bool skipDisplay = false, uint8_t groupId = 0);
 
-  void createRLE(uint8_t* runLengths);
-  void createStartColorRLE(uint8_t red, uint8_t green, uint8_t blue, uint8_t profileId, uint8_t* runLengths);
+  void createRLE(uint8_t* RLEArray, uint8_t* RLEArrayLen);
+  void createStartColorRLE(uint8_t red, uint8_t green, uint8_t blue, uint8_t profileId, uint8_t* RLEArray, uint8_t* RLEArrayLen);
 
 private:
   Field fOnStart = Field(2, 0, 1);
@@ -128,7 +128,7 @@ public:
   CommandSetConfig(bool onStart = true, bool gstEnable = false, uint8_t profileIdLo = 0, uint8_t profileId_Hi = 0, bool isRandom = false, uint8_t attack = 0,
                    uint8_t sustain = 0, uint8_t release = 0);
 
-  void createRLE(uint8_t* runLengths);
+  void createRLE(uint8_t* RLEArray, uint8_t* RLEArrayLen);
 
 private:
   Field fOnStart = Field(2, 0, 1);
@@ -148,7 +148,7 @@ public:
   uint8_t red, green, blue;
 
   CommandSingleColor(bool onStart = false, bool gstEnable = false, uint8_t red = 0, uint8_t green = 0, uint8_t blue = 0);
-  void createRLE(uint8_t* runLengths);
+  void createRLE(uint8_t* RLEArray, uint8_t* RLEArrayLen);
 
 private:
   Field fOnStart = Field(2, 0, 1);
@@ -164,8 +164,8 @@ public:
   uint8_t red1, green1, blue1, red2, green2, blue2;
 
   CommandTwoColor(bool gstEnable = false, uint8_t red1 = 0, uint8_t green1 = 0, uint8_t blue1 = 0, 
-                     uint8_t red2 = 0, uint8_t green2 = 0, uint8_t blue2 = 0);
-  void createRLE(uint8_t* runLengths);
+                  uint8_t red2 = 0, uint8_t green2 = 0, uint8_t blue2 = 0);
+  void createRLE(uint8_t* RLEArray, uint8_t* RLEArrayLen);
 
 private:
   Field fOnStart = Field(2, 0, 1);
@@ -184,7 +184,7 @@ public:
   uint8_t repeatDelay, groupId;
 
   CommandSetRepeatDelayTime(bool gstEnable = false, uint8_t repeatDelay = 0, uint8_t groupId = 0);
-  void createRLE(uint8_t* runLengths);
+  void createRLE(uint8_t* RLEArray, uint8_t* RLEArrayLens);
 
 private:
   Field fOnStart = Field(2, 0, 1);
@@ -199,7 +199,7 @@ public:
   uint8_t repeatCount, groupId;
 
   CommandSetRepeatCount(bool gstEnable = false, uint8_t repeatCount = 0, uint8_t groupId = 0);
-  void createRLE(uint8_t* runLengths);
+  void createRLE(uint8_t* RLEArray, uint8_t* RLEArrayLen);
 
 private:
   Field fOnStart = Field(2, 0, 1);

@@ -8,6 +8,7 @@ static const uint16_t kIRPulseLength = 694;   // IR pulse length
 
 //Global irCommand array of uint_8s
 uint8_t irCommand[Command::kMaxEncodedSize];
+uint8_t irCommandLen;
 
 //Global colors array (max 10)
 struct colorObj {
@@ -22,20 +23,18 @@ void setup() {
 }
 
 void sendIRCommand() {
-  uint16_t rawData[Command::kMaxEncodedSize];
-  uint8_t i = 0;
-  while (irCommand[i] != Command::kEndFlag) {
+  uint16_t rawData[irCommandLen];
+  for (uint8_t i = 0; i < irCommandLen; i++) {
     rawData[i] = irCommand[i] * kIRPulseLength;
-    i++;
   }
-  IrSender.sendRaw(rawData, i, kIRFrequencyKHz);
+  IrSender.sendRaw(rawData, irCommandLen, kIRFrequencyKHz);
   delay(5);
 }
 
 void sendColorPulse(uint8_t red, uint8_t green, uint8_t blue) {
   CommandSingleColorExt commandSingleColorExt = CommandSingleColorExt(false, false, red, green, blue, Command::CHANCE_100_PCT,
                                                                       Command::TIME_32_MS, Command::TIME_96_MS, Command:: TIME_32_MS);
-  commandSingleColorExt.createRLE(irCommand);
+  commandSingleColorExt.createRLE(irCommand, &irCommandLen);
   sendIRCommand();
 }
 
@@ -44,12 +43,12 @@ void sendStartColorSequence(uint8_t numColors, bool isRandom, uint8_t attack, ui
 
   //Send colors with unique profileIds
   for (uint8_t i = 0; i < numColors; i++) {
-    commandSetColor.createStartColorRLE(colors[i].red, colors[i].green, colors[i].blue, i, irCommand);
+    commandSetColor.createStartColorRLE(colors[i].red, colors[i].green, colors[i].blue, i, irCommand, &irCommandLen);
     sendIRCommand();
   }
   //Set config to trigger the colors in the profiles
   CommandSetConfig commandSetConfig = CommandSetConfig(true, true, 0, numColors - 1, isRandom, attack, sustain, release);
-  commandSetConfig.createRLE(irCommand);
+  commandSetConfig.createRLE(irCommand, &irCommandLen);
   sendIRCommand();
 }
 
@@ -65,18 +64,18 @@ void clearBackgroundColor() {
 void sendRepeatEffect() {
   //Repeat gap 960ms
   CommandSetRepeatDelayTime commandSetRepeatDelayTime = CommandSetRepeatDelayTime(false, Command::TIME_960_MS);
-  commandSetRepeatDelayTime.createRLE(irCommand);
+  commandSetRepeatDelayTime.createRLE(irCommand, &irCommandLen);
   sendIRCommand();
 
   //Repeat 3 times
   CommandSetRepeatCount commandSetRepeatCount = CommandSetRepeatCount(false, 3);
-  commandSetRepeatCount.createRLE(irCommand);
+  commandSetRepeatCount.createRLE(irCommand, &irCommandLen);
   sendIRCommand();
 
   //Setthe color purple with enableRepeat set to true
   CommandSingleColorExt commandSingleColorExt = CommandSingleColorExt(false, false, 128, 0, 128, Command::CHANCE_100_PCT,
                                                                       Command::TIME_96_MS, Command::TIME_480_MS, Command:: TIME_96_MS, 0, true);
-  commandSingleColorExt.createRLE(irCommand);
+  commandSingleColorExt.createRLE(irCommand, &irCommandLen);
   sendIRCommand();
 }
 
@@ -94,6 +93,12 @@ void sendErasGoHome() {
 
 //Demo
 void loop() {
+  //Set background color then clear
+  setBackgroundColor(0, 255, 128);
+  delay(5000);
+  clearBackgroundColor();
+  delay(1000);
+
   //4 pulses: white, red, green, blue
   delay(1000);
   sendColorPulse(255,255,255);
@@ -108,12 +113,6 @@ void loop() {
   //Send repeated purple color x3 using repeat effect
   sendRepeatEffect();
   delay(5000);
-
-  //Set background color then clear
-  setBackgroundColor(0, 255, 128);
-  delay(5000);
-  clearBackgroundColor();
-  delay(1000);
 
   //Set 8 colors that randomly cycle
   sendErasGoHome();
